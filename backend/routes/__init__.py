@@ -1,10 +1,10 @@
-from .auth_routes import auth_bp
-from .contact_routes import contact_bp
-from .lead_routes import lead_bp
-from .order_routes import order_bp
-from .invoice_routes import invoice_bp
-from .receipt_routes import receipt_bp
-from .accounting_routes import accounting_bp
+from backend.routes.auth_routes import auth_bp
+from backend.routes.contact_routes import contact_bp
+from backend.routes.lead_routes import lead_bp
+from backend.routes.order_routes import order_bp
+from backend.routes.invoice_routes import invoice_bp
+from backend.routes.receipt_routes import receipt_bp
+from backend.routes.accounting_routes import accounting_bp
 
 __all__ = [
     'auth_bp', 

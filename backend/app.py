@@ -2,10 +2,10 @@ import os
 from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, current_user
 from dotenv import load_dotenv
-from database.db_setup import setup_db
-from database.models import User
-from routes import auth_bp, contact_bp, lead_bp, order_bp, invoice_bp, receipt_bp, accounting_bp
-from config import config
+from backend.database.db_setup import setup_db
+from backend.database.models import User
+from backend.routes import auth_bp, contact_bp, lead_bp, order_bp, invoice_bp, receipt_bp, accounting_bp
+from backend.config import config
 
 # Load environment variables
 load_dotenv()
