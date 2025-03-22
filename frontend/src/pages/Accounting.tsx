@@ -17,6 +17,7 @@ const Accounting: React.FC = () => {
   const [summaryData, setSummaryData] = useState<any>(null);
   const [activePeriod, setActivePeriod] = useState('month');
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('ledger');
   
   const navigate = useNavigate();
 
@@ -43,11 +44,15 @@ const Accounting: React.FC = () => {
   const fetchEntries = async () => {
     try {
       setLoading(true);
+      console.log('Fetching accounting entries...');
       const response = await accountingService.getEntries();
+      console.log('Entries response:', response.data);
       setEntries(response.data.entries || []);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching accounting entries:', err);
+      console.error('Response status:', err.response?.status);
+      console.error('Response data:', err.response?.data);
       setError('Failed to load accounting data. Please try again later.');
     } finally {
       setLoading(false);
@@ -57,11 +62,15 @@ const Accounting: React.FC = () => {
   const fetchSummary = async (period: string) => {
     try {
       setSummaryLoading(true);
+      console.log(`Fetching summary for period: ${period}`);
       const response = await accountingService.getSummary(period);
+      console.log('Summary response:', response.data);
       setSummaryData(response.data);
       setActivePeriod(period);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching summary:', err);
+      console.error('Response status:', err.response?.status);
+      console.error('Response data:', err.response?.data);
     } finally {
       setSummaryLoading(false);
     }
@@ -237,244 +246,236 @@ const Accounting: React.FC = () => {
 
   return (
     <Container fluid>
-      <Row className="mb-4 align-items-center">
+      <Row className="mb-4">
         <Col>
-          <h1 className="h3 mb-0">Accounting</h1>
+          <h1 className="h3">Accounting</h1>
+          <p className="text-muted">Manage your financial transactions, income, and expenses</p>
         </Col>
         <Col xs="auto">
-          <Button 
-            variant="primary" 
-            onClick={() => setShowAddModal(true)}
-          >
-            <FaPlus className="me-1" /> Add Entry
+          <Button variant="primary" onClick={() => setShowAddModal(true)}>
+            <FaPlus className="me-2" /> Add Entry
           </Button>
         </Col>
       </Row>
 
-      <Tabs defaultActiveKey="entries" id="accounting-tabs" className="mb-4">
-        <Tab eventKey="entries" title="Entries">
-          <Card>
-            <Card.Header>
-              <Row className="align-items-center">
-                <Col md={6}>
-                  <h5 className="mb-0">Accounting Entries</h5>
-                </Col>
-                <Col md={6}>
-                  <InputGroup>
-                    <Form.Control
-                      placeholder="Search entries..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    {searchTerm && (
-                      <Button 
-                        variant="outline-secondary" 
-                        onClick={() => setSearchTerm('')}
-                      >
-                        <FaTimes />
-                      </Button>
-                    )}
-                  </InputGroup>
-                </Col>
-              </Row>
-            </Card.Header>
-            <Card.Body>
-              {loading ? (
-                <div className="text-center p-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : error ? (
-                <div className="text-center text-danger p-3">{error}</div>
-              ) : filteredEntries.length > 0 ? (
-                <div className="table-responsive">
-                  <Table hover>
-                    <thead>
-                      <tr>
-                        <th>Type</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredEntries.map((entry) => (
-                        <tr key={entry.id}>
-                          <td>{getEntryTypeBadge(entry.entry_type)}</td>
-                          <td>{entry.category}</td>
-                          <td>{entry.description}</td>
-                          <td className={entry.entry_type.toLowerCase() === 'income' ? 'text-success' : 'text-danger'}>
-                            {formatCurrency(entry.amount)}
-                          </td>
-                          <td>{formatDate(entry.date)}</td>
-                          <td>
-                            <div className="d-flex gap-1">
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => {
-                                  setFormData({
-                                    entry_type: entry.entry_type,
-                                    category: entry.category,
-                                    amount: entry.amount.toString(),
-                                    description: entry.description || '',
-                                    date: new Date(entry.date).toISOString().split('T')[0]
-                                  });
-                                  setSelectedEntry(entry);
-                                  setShowAddModal(true);
-                                }}
-                              >
-                                <FaEdit />
-                              </Button>
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => confirmDelete(entry)}
-                              >
-                                <FaTrash />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              ) : (
-                <div className="text-center p-5">
-                  <div className="mb-3">
-                    <FaFileInvoiceDollar size={64} className="text-muted" />
-                  </div>
-                  <h4>No accounting entries found</h4>
-                  <p className="text-muted">Get started by adding your first income or expense entry.</p>
-                  <Button 
-                    variant="primary" 
-                    className="mt-2"
-                    onClick={() => setShowAddModal(true)}
-                  >
-                    <FaPlus className="me-1" /> Add Your First Entry
-                  </Button>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-        
-        <Tab eventKey="summary" title="Financial Summary">
-          <Card>
-            <Card.Header>
-              <Row className="align-items-center">
-                <Col md={6}>
-                  <h5 className="mb-0">Financial Summary</h5>
-                </Col>
-                <Col md={6}>
-                  <div className="d-flex justify-content-md-end">
-                    <Button
-                      variant={activePeriod === 'week' ? 'primary' : 'outline-primary'}
-                      size="sm"
-                      className="me-2"
-                      onClick={() => fetchSummary('week')}
-                    >
-                      Week
-                    </Button>
-                    <Button
-                      variant={activePeriod === 'month' ? 'primary' : 'outline-primary'}
-                      size="sm"
-                      className="me-2"
-                      onClick={() => fetchSummary('month')}
-                    >
-                      Month
-                    </Button>
-                    <Button
-                      variant={activePeriod === 'quarter' ? 'primary' : 'outline-primary'}
-                      size="sm"
-                      className="me-2"
-                      onClick={() => fetchSummary('quarter')}
-                    >
-                      Quarter
-                    </Button>
-                    <Button
-                      variant={activePeriod === 'year' ? 'primary' : 'outline-primary'}
-                      size="sm"
-                      onClick={() => fetchSummary('year')}
-                    >
-                      Year
-                    </Button>
-                  </div>
-                </Col>
-              </Row>
-            </Card.Header>
-            <Card.Body>
-              {summaryLoading ? (
-                <div className="text-center p-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading summary...</span>
-                  </div>
-                </div>
-              ) : summaryData ? (
-                <>
-                  <Row className="mb-4">
-                    <Col md={4}>
-                      <Card className="text-center h-100">
-                        <Card.Body className="d-flex flex-column justify-content-center">
-                          <h6 className="text-muted">Total Income</h6>
-                          <h3 className="text-success">
-                            {formatCurrency(summaryData.total_income || 0)}
-                          </h3>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col md={4}>
-                      <Card className="text-center h-100">
-                        <Card.Body className="d-flex flex-column justify-content-center">
-                          <h6 className="text-muted">Total Expenses</h6>
-                          <h3 className="text-danger">
-                            {formatCurrency(summaryData.total_expenses || 0)}
-                          </h3>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col md={4}>
-                      <Card className="text-center h-100">
-                        <Card.Body className="d-flex flex-column justify-content-center">
-                          <h6 className="text-muted">Net Profit</h6>
-                          <h3 className={summaryData.net_profit >= 0 ? 'text-success' : 'text-danger'}>
-                            {formatCurrency(summaryData.net_profit || 0)}
-                          </h3>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  </Row>
+      {error && (
+        <Alert variant="danger" onClose={() => setError(null)} dismissible>
+          {error}
+        </Alert>
+      )}
 
-                  <Row>
-                    <Col md={6}>
-                      <Card>
-                        <Card.Header>Income by Category</Card.Header>
-                        <Card.Body>
-                          <canvas id="incomeChart"></canvas>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    <Col md={6}>
-                      <Card>
-                        <Card.Header>Expenses by Category</Card.Header>
-                        <Card.Body>
-                          <canvas id="expenseChart"></canvas>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  </Row>
-                </>
-              ) : (
-                <Alert variant="info">No financial data available for the selected period.</Alert>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-      </Tabs>
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Loading accounting data...</p>
+        </div>
+      ) : (
+        <Tabs
+          id="accounting-tabs"
+          activeKey={activeTab}
+          onSelect={(k) => k && setActiveTab(k)}
+          className="mb-4"
+        >
+          <Tab eventKey="ledger" title="General Ledger">
+            <Card>
+              <Card.Body>
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <InputGroup>
+                      <Form.Control
+                        placeholder="Search entries..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      {searchTerm && (
+                        <Button variant="outline-secondary" onClick={() => setSearchTerm('')}>
+                          <FaTimes />
+                        </Button>
+                      )}
+                    </InputGroup>
+                  </Col>
+                </Row>
+
+                {entries.length === 0 ? (
+                  <Alert variant="info">
+                    No accounting entries found. Use the "Add Entry" button to create your first financial record.
+                  </Alert>
+                ) : (
+                  <div className="table-responsive">
+                    <Table hover>
+                      <thead>
+                        <tr>
+                          <th>Type</th>
+                          <th>Category</th>
+                          <th>Description</th>
+                          <th>Amount</th>
+                          <th>Date</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredEntries.map((entry) => (
+                          <tr key={entry.id}>
+                            <td>{getEntryTypeBadge(entry.entry_type)}</td>
+                            <td>{entry.category}</td>
+                            <td>{entry.description}</td>
+                            <td className={entry.entry_type.toLowerCase() === 'income' ? 'text-success' : 'text-danger'}>
+                              {formatCurrency(entry.amount)}
+                            </td>
+                            <td>{formatDate(entry.date)}</td>
+                            <td>
+                              <div className="d-flex gap-1">
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => {
+                                    setFormData({
+                                      entry_type: entry.entry_type,
+                                      category: entry.category,
+                                      amount: entry.amount.toString(),
+                                      description: entry.description || '',
+                                      date: new Date(entry.date).toISOString().split('T')[0]
+                                    });
+                                    setSelectedEntry(entry);
+                                    setShowAddModal(true);
+                                  }}
+                                >
+                                  <FaEdit />
+                                </Button>
+                                <Button
+                                  variant="danger"
+                                  size="sm"
+                                  onClick={() => confirmDelete(entry)}
+                                >
+                                  <FaTrash />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                )}
+              </Card.Body>
+            </Card>
+          </Tab>
+          
+          <Tab eventKey="summary" title="Financial Summary">
+            <Card>
+              <Card.Header>
+                <Row className="align-items-center">
+                  <Col md={6}>
+                    <h5 className="mb-0">Financial Summary</h5>
+                  </Col>
+                  <Col md={6}>
+                    <div className="d-flex justify-content-md-end">
+                      <Button
+                        variant={activePeriod === 'week' ? 'primary' : 'outline-primary'}
+                        size="sm"
+                        className="me-2"
+                        onClick={() => fetchSummary('week')}
+                      >
+                        Week
+                      </Button>
+                      <Button
+                        variant={activePeriod === 'month' ? 'primary' : 'outline-primary'}
+                        size="sm"
+                        className="me-2"
+                        onClick={() => fetchSummary('month')}
+                      >
+                        Month
+                      </Button>
+                      <Button
+                        variant={activePeriod === 'quarter' ? 'primary' : 'outline-primary'}
+                        size="sm"
+                        className="me-2"
+                        onClick={() => fetchSummary('quarter')}
+                      >
+                        Quarter
+                      </Button>
+                      <Button
+                        variant={activePeriod === 'year' ? 'primary' : 'outline-primary'}
+                        size="sm"
+                        onClick={() => fetchSummary('year')}
+                      >
+                        Year
+                      </Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Card.Header>
+              <Card.Body>
+                {summaryLoading ? (
+                  <div className="text-center p-5">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading summary...</span>
+                    </div>
+                  </div>
+                ) : summaryData ? (
+                  <>
+                    <Row className="mb-4">
+                      <Col md={4}>
+                        <Card className="text-center h-100">
+                          <Card.Body className="d-flex flex-column justify-content-center">
+                            <h6 className="text-muted">Total Income</h6>
+                            <h3 className="text-success">
+                              {formatCurrency(summaryData.total_income || 0)}
+                            </h3>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                      <Col md={4}>
+                        <Card className="text-center h-100">
+                          <Card.Body className="d-flex flex-column justify-content-center">
+                            <h6 className="text-muted">Total Expenses</h6>
+                            <h3 className="text-danger">
+                              {formatCurrency(summaryData.total_expenses || 0)}
+                            </h3>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                      <Col md={4}>
+                        <Card className="text-center h-100">
+                          <Card.Body className="d-flex flex-column justify-content-center">
+                            <h6 className="text-muted">Net Profit</h6>
+                            <h3 className={summaryData.net_profit >= 0 ? 'text-success' : 'text-danger'}>
+                              {formatCurrency(summaryData.net_profit || 0)}
+                            </h3>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col md={6}>
+                        <Card>
+                          <Card.Header>Income by Category</Card.Header>
+                          <Card.Body>
+                            <canvas id="incomeChart"></canvas>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                      <Col md={6}>
+                        <Card>
+                          <Card.Header>Expenses by Category</Card.Header>
+                          <Card.Body>
+                            <canvas id="expenseChart"></canvas>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
+                  </>
+                ) : (
+                  <Alert variant="info">No financial data available for the selected period.</Alert>
+                )}
+              </Card.Body>
+            </Card>
+          </Tab>
+        </Tabs>
+      )}
 
       {/* Add/Edit Entry Modal */}
       <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
