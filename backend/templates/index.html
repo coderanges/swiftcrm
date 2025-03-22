@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SwiftCRM{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="fw-bold">Dashboard</h1>
+        <p class="lead">Welcome back, {{ current_user.name }}!</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Contacts</h5>
+                        <h3 class="fw-bold">{{ contacts_count|default(0) }}</h3>
+                    </div>
+                    <i class="fas fa-address-card fa-3x opacity-50"></i>
+                </div>
+                <a href="{{ url_for('contacts.contacts') }}" class="btn btn-outline-light mt-auto">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Leads</h5>
+                        <h3 class="fw-bold">{{ leads_count|default(0) }}</h3>
+                    </div>
+                    <i class="fas fa-funnel-dollar fa-3x opacity-50"></i>
+                </div>
+                <a href="{{ url_for('leads.leads') }}" class="btn btn-outline-light mt-auto">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Orders</h5>
+                        <h3 class="fw-bold">{{ orders_count|default(0) }}</h3>
+                    </div>
+                    <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
+                </div>
+                <a href="{{ url_for('orders.orders') }}" class="btn btn-outline-light mt-auto">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Invoices</h5>
+                        <h3 class="fw-bold">{{ invoices_count|default(0) }}</h3>
+                    </div>
+                    <i class="fas fa-file-invoice-dollar fa-3x opacity-50"></i>
+                </div>
+                <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-dark mt-auto">View All</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Activity</h5>
+                <button class="btn btn-sm btn-outline-primary">View All</button>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% if recent_activity %}
+                        {% for activity in recent_activity %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ activity.title }}</h6>
+                                    <small>{{ activity.time }}</small>
+                                </div>
+                                <p class="mb-1">{{ activity.description }}</p>
+                                <small>{{ activity.user }}</small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item text-center py-5">
+                            <p class="mb-0 text-muted">No recent activity</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Financial Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="fw-bold">Total Revenue</label>
+                    <h4 class="text-success">${{ total_revenue|default('0.00') }}</h4>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Outstanding Invoices</label>
+                    <h4 class="text-warning">${{ outstanding_invoices|default('0.00') }}</h4>
+                </div>
+                <div>
+                    <label class="fw-bold">Expenses</label>
+                    <h4 class="text-danger">${{ expenses|default('0.00') }}</h4>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('accounting.accounting') }}" class="btn btn-primary">View Accounting</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Add</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('contacts.add_contact') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus me-1"></i> Contact
+                    </a>
+                    <a href="{{ url_for('leads.add_lead') }}" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-1"></i> Lead
+                    </a>
+                    <a href="{{ url_for('orders.add_order') }}" class="btn btn-outline-info">
+                        <i class="fas fa-plus me-1"></i> Order
+                    </a>
+                    <a href="{{ url_for('invoices.add_invoice') }}" class="btn btn-outline-warning">
+                        <i class="fas fa-plus me-1"></i> Invoice
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // You can add dashboard-specific JavaScript here
+</script>
+{% endblock %}
