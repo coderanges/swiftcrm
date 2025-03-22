@@ -10,4 +10,42 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Timeline Component CSS */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  left: -1.5rem;
+  top: 0.25rem;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: -1.09rem;
+  top: 0.5rem;
+  height: calc(100% - 0.5rem);
+  width: 2px;
+  background-color: #e9ecef;
+}
+
+.timeline-content {
+  padding-bottom: 0.25rem;
 } 

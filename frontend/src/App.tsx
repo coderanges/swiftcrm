@@ -12,6 +12,7 @@ import Contacts from './pages/Contacts';
 import ContactNew from './pages/ContactNew';
 import Leads from './pages/Leads';
 import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 import Invoices from './pages/Invoices';
 import InvoiceDetail from './pages/InvoiceDetail';
 import InvoiceForm from './pages/InvoiceForm';
@@ -35,6 +36,7 @@ function App() {
             <Route path="/contacts/new" element={<ContactNew />} />
             <Route path="/leads" element={<Leads />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/invoices/new" element={<InvoiceForm />} />
             <Route path="/invoices/:id" element={<InvoiceDetail />} />
