@@ -1,6 +1,6 @@
 # **SwiftCRM**  
 
-SwiftCRM is a simple Customer Relationship Management (CRM) system built with Flask and Jinja2 templates. It allows for easy management of **contacts, leads, orders, invoices, receipts, and accounting**. The project is designed to start with a Jinja2-based frontend and later transition to a React frontend while keeping the Flask backend.
+SwiftCRM is a comprehensive Customer Relationship Management (CRM) system with a Flask backend and React TypeScript frontend. It allows for easy management of **contacts, leads, orders, invoices, receipts, and accounting**. The project implements a modern architecture with a RESTful API backend and a responsive React frontend.
 
 ---
 
@@ -12,147 +12,222 @@ SwiftCRM is a simple Customer Relationship Management (CRM) system built with Fl
 ✅ Invoicing System (Generate, Send, Track Payments)  
 ✅ Receipt Management (Generate and Track Receipts)  
 ✅ Accounting Module (Track Expenses, Revenue, and Financial Reports)  
-✅ Jinja2-based UI (for now, React-ready)  
-✅ API Endpoints for future React integration  
+✅ Modern React TypeScript Frontend  
+✅ RESTful API with Flask Backend  
+✅ Responsive Design for Mobile and Desktop  
 
 ---
 
 ## **📂 Project Structure**  
 ```
 swiftcrm/
-│── backend/
-│   ├── app.py
-│   ├── config.py
-│   ├── requirements.txt
-│   ├── database/
-│   │   ├── __init__.py
-│   │   ├── models.py
-│   │   ├── db_setup.py
-│   │   ├── migrations/
-│   ├── routes/
-│   │   ├── __init__.py
-│   │   ├── auth_routes.py
-│   │   ├── contact_routes.py
-│   │   ├── lead_routes.py
-│   │   ├── order_routes.py
-│   │   ├── invoice_routes.py
-│   │   ├── receipt_routes.py
-│   │   ├── accounting_routes.py
-│   ├── templates/
-│   │   ├── base.html
-│   │   ├── index.html
-│   │   ├── contacts.html
-│   │   ├── leads.html
-│   │   ├── orders.html
-│   │   ├── invoices.html
-│   │   ├── receipts.html
-│   │   ├── accounting.html
-│   │   ├── login.html
-│   ├── static/
-│   │   ├── css/style.css
-│   │   ├── js/scripts.js
-│── frontend/ (For React when migrating)
-│── docker-compose.yml
-│── README.md
+│── backend/                        # Flask Backend
+│   ├── app.py                      # Main application file
+│   ├── config.py                   # Configuration settings
+│   ├── database/                   # Database models and setup
+│   │   ├── models.py               # SQLAlchemy models
+│   │   ├── db_setup.py             # Database initialization
+│   ├── routes/                     # API routes
+│   │   ├── auth_routes.py          # Authentication endpoints
+│   │   ├── contact_routes.py       # Contact management endpoints
+│   │   ├── lead_routes.py          # Lead management endpoints
+│   │   ├── order_routes.py         # Order management endpoints
+│   │   ├── invoice_routes.py       # Invoice management endpoints
+│   │   ├── receipt_routes.py       # Receipt management endpoints
+│   │   ├── accounting_routes.py    # Accounting endpoints
+│   ├── templates/                  # Jinja2 templates
+│   │   ├── base.html               # Base template with layout
+│   │   ├── index.html              # Dashboard template
+│   │   ├── login.html              # Authentication templates
+│   │   ├── ...                     # Other feature templates
+│   ├── static/                     # Static assets
+│       ├── css/style.css           # Custom CSS styles
+│       ├── js/scripts.js           # Frontend JavaScript
+│
+│── frontend/                       # React TypeScript Frontend
+│   ├── public/                     # Public assets
+│   ├── src/                        # Source code
+│   │   ├── components/             # Reusable UI components
+│   │   ├── context/                # React context providers
+│   │   ├── pages/                  # Page components
+│   │   ├── services/               # API services
+│   │   ├── types/                  # TypeScript type definitions
+│   │   ├── App.tsx                 # Main application component
+│   │   ├── index.tsx               # Entry point
+│   ├── package.json                # Node.js dependencies
+│   ├── tsconfig.json               # TypeScript configuration
+│
+│── venv/                           # Python virtual environment
+│── requirements.txt                # Python dependencies
+│── .gitignore                      # Git ignore file
+│── README.md                       # Project documentation
 ```
 
 ---
 
-## **🚀 Installation**  
+## **🚀 Installation and Setup**  
 
-### **1️⃣ Clone the Repository**  
+### **Backend Setup**  
+
+#### **1️⃣ Clone the Repository**  
 ```bash
-git clone git@github.com:coderanges/swiftcrm.git
-cd swiftcrm/backend
+git clone https://github.com/yourusername/swiftcrm.git
+cd swiftcrm
 ```
 
-### **2️⃣ Create and Activate Virtual Environment**  
+#### **2️⃣ Create and Activate Virtual Environment**  
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # (Linux/Mac)
 venv\Scripts\activate     # (Windows)
 ```
 
-### **3️⃣ Install Dependencies**  
+#### **3️⃣ Install Backend Dependencies**  
 ```bash
 pip install -r requirements.txt
 ```
 
-### **4️⃣ Set Up the Database**  
+#### **4️⃣ Set Up the Database**  
 ```bash
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
-```
-
-### **5️⃣ Run the App**  
-```bash
-flask run
-```
-The app will be available at **http://127.0.0.1:5000/**  
-
----
-
-## **📂 Creating the Project Structure**  
-
-### **Run these commands inside your `swiftcrm` folder:**  
-
-```bash
-# Create backend and frontend directories
-mkdir -p backend/database backend/database/migrations backend/routes backend/templates backend/static/css backend/static/js frontend
-
+export PYTHONPATH=$PWD  # Set Python path to include the project root
 cd backend
+python -c "from backend.app import create_app; from backend.database.db_setup import setup_db; app = create_app(); setup_db(app)"
+```
 
-# Create main backend files
-touch app.py config.py requirements.txt
+#### **5️⃣ Run the Backend Server**  
+```bash
+cd ..  # Return to project root if needed
+export PYTHONPATH=$PWD
+python -c "from backend.app import create_app; app = create_app(); app.run(debug=True, host='0.0.0.0')"
+```
+The backend API will be available at **http://localhost:5000/**  
 
-# Create database files
-touch database/__init__.py database/models.py database/db_setup.py
+### **Frontend Setup**  
 
-# Create route files
-touch routes/__init__.py routes/auth_routes.py routes/contact_routes.py routes/lead_routes.py routes/order_routes.py routes/invoice_routes.py routes/receipt_routes.py routes/accounting_routes.py
+#### **1️⃣ Navigate to the Frontend Directory**  
+```bash
+cd frontend
+```
 
-# Create template files
-touch templates/base.html templates/index.html templates/contacts.html templates/leads.html templates/orders.html templates/invoices.html templates/receipts.html templates/accounting.html templates/login.html
+#### **2️⃣ Install Frontend Dependencies**  
+```bash
+npm install
+```
 
-# Create static files
-touch static/css/style.css static/js/scripts.js
+#### **3️⃣ Start the Development Server**  
+```bash
+npm start
+```
 
-# Navigate back to project root
-cd ../..
+The React frontend will be available at **http://localhost:3000/**  
 
-# Create Docker and README files
-touch docker-compose.yml README.md
+#### **4️⃣ Build for Production**  
+```bash
+npm run build
 ```
 
 ---
 
-## **📌 API Endpoints (For Future React Migration)**  
+## **🌐 API Endpoints**  
 
-| Endpoint          | Method | Description |
-|------------------|--------|-------------|
-| `/`              | GET    | Home page (Jinja2) |
-| `/contacts`      | GET    | Contact list (Jinja2) |
-| `/leads`         | GET    | Lead list (Jinja2) |
-| `/orders`        | GET    | Order list (Jinja2) |
-| `/invoices`      | GET    | Invoice list (Jinja2) |
-| `/receipts`      | GET    | Receipt list (Jinja2) |
-| `/accounting`    | GET    | Accounting dashboard (Jinja2) |
-| `/api/contacts`  | GET    | Fetch contacts (JSON API) |
-| `/api/leads`     | GET    | Fetch leads (JSON API) |
-| `/api/orders`    | GET    | Fetch orders (JSON API) |
-| `/api/invoices`  | GET    | Fetch invoices (JSON API) |
-| `/api/receipts`  | GET    | Fetch receipts (JSON API) |
-| `/api/accounting`| GET    | Fetch financial reports (JSON API) |
+### **Authentication**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/register` | POST | Register a new user |
+| `/api/login` | POST | Log in an existing user |
+| `/api/logout` | POST | Log out current user |
+
+### **Contacts**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/contacts` | GET | Get all contacts |
+| `/api/contacts` | POST | Create a new contact |
+| `/api/contacts/:id` | GET | Get contact details |
+| `/api/contacts/:id` | PUT | Update a contact |
+| `/api/contacts/:id` | DELETE | Delete a contact |
+
+### **Leads**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/leads` | GET | Get all leads |
+| `/api/leads` | POST | Create a new lead |
+| `/api/leads/:id` | GET | Get lead details |
+| `/api/leads/:id` | PUT | Update a lead |
+| `/api/leads/:id` | DELETE | Delete a lead |
+
+### **Orders**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/orders` | GET | Get all orders |
+| `/api/orders` | POST | Create a new order |
+| `/api/orders/:id` | GET | Get order details |
+| `/api/orders/:id` | PUT | Update an order |
+| `/api/orders/:id` | DELETE | Delete an order |
+
+### **Invoices**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/invoices` | GET | Get all invoices |
+| `/api/invoices` | POST | Create a new invoice |
+| `/api/invoices/:id` | GET | Get invoice details |
+| `/api/invoices/:id` | PUT | Update an invoice |
+| `/api/invoices/:id` | DELETE | Delete an invoice |
+
+### **Receipts**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/receipts` | GET | Get all receipts |
+| `/api/receipts` | POST | Create a new receipt |
+| `/api/receipts/:id` | GET | Get receipt details |
+| `/api/receipts/:id` | PUT | Update a receipt |
+| `/api/receipts/:id` | DELETE | Delete a receipt |
+
+### **Accounting**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/accounting/entries` | GET | Get accounting entries |
+| `/api/accounting/entries` | POST | Create a new accounting entry |
+| `/api/accounting/summary` | GET | Get financial summary |
+
+---
+
+## **📱 Frontend Features**
+
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **TypeScript Support**: Type-safe code for better development experience
+- **Component-Based Architecture**: Reusable UI components
+- **Context API**: For state management across the application
+- **Routing**: Page navigation with React Router
+- **Form Validation**: Client-side validation for all forms
+- **Authentication**: User login and registration with token-based auth
+- **Secure API Communication**: Axios for API requests with proper error handling
+
+---
+
+## **🖥️ System Requirements**
+
+### **Backend**
+- Python 3.8+
+- Flask 3.0.0
+- SQLAlchemy 2.0+
+- Additional requirements in requirements.txt
+
+### **Frontend**
+- Node.js 14.0+ (16.0+ recommended)
+- npm 6.0+ or yarn
+- React 18.0+
+- TypeScript 4.9+
 
 ---
 
 ## **📈 Future Plans**  
-- [ ] Integrate React for frontend  
-- [ ] Add authentication with JWT  
-- [ ] Implement role-based access control  
-- [ ] Enhance invoicing and receipt system with payment tracking  
-- [ ] Expand accounting module with budgeting and tax calculations  
+- [ ] Implement role-based access control
+- [ ] Add data visualization for accounting data
+- [ ] Enable PDF generation for invoices and receipts
+- [ ] Integrate with payment gateways
+- [ ] Add email notifications for important events
+- [ ] Implement advanced reporting and analytics
+- [ ] Add dark/light theme support
 
 ---
 
