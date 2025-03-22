@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{{ contact.name }} - SwiftCRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Contact Details</h4>
+            <div>
+                <a href="{{ url_for('contacts.edit_contact', contact_id=contact.id) }}" class="btn btn-secondary">Edit</a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Name:</strong> {{ contact.name }}</p>
+                    {% if contact.email %}
+                    <p><strong>Email:</strong> <a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                    {% endif %}
+                    {% if contact.phone %}
+                    <p><strong>Phone:</strong> <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {% if contact.company %}
+                    <p><strong>Company:</strong> {{ contact.company }}</p>
+                    {% endif %}
+                    {% if contact.address %}
+                    <p><strong>Address:</strong> {{ contact.address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% if contact.notes %}
+            <div class="mt-3">
+                <h5>Notes</h5>
+                <div class="card">
+                    <div class="card-body">
+                        {{ contact.notes|nl2br }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <h5>Related Information</h5>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="leads-tab" data-bs-toggle="tab" data-bs-target="#leads" type="button" role="tab">Leads ({{ contact.leads|length }})</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders ({{ contact.orders|length }})</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoices" type="button" role="tab">Invoices ({{ contact.invoices|length }})</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-3 border border-top-0 rounded-bottom" id="myTabContent">
+                    <div class="tab-pane fade show active" id="leads" role="tabpanel">
+                        {% if contact.leads %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lead in contact.leads %}
+                                    <tr>
+                                        <td>{{ lead.title }}</td>
+                                        <td><span class="badge bg-{{ lead.status|lower }}">{{ lead.status }}</span></td>
+                                        <td>${{ lead.value }}</td>
+                                        <td>
+                                            <a href="{{ url_for('leads.view_lead', lead_id=lead.id) }}" class="btn btn-sm btn-info">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No leads associated with this contact.</p>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="orders" role="tabpanel">
+                        {% if contact.orders %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in contact.orders %}
+                                    <tr>
+                                        <td>{{ order.order_number }}</td>
+                                        <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td><span class="badge bg-{{ order.status|lower }}">{{ order.status }}</span></td>
+                                        <td>${{ order.total_amount }}</td>
+                                        <td>
+                                            <a href="{{ url_for('orders.view_order', order_id=order.id) }}" class="btn btn-sm btn-info">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No orders associated with this contact.</p>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="invoices" role="tabpanel">
+                        {% if contact.invoices %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in contact.invoices %}
+                                    <tr>
+                                        <td>{{ invoice.invoice_number }}</td>
+                                        <td>{{ invoice.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ invoice.due_date.strftime('%Y-%m-%d') }}</td>
+                                        <td><span class="badge bg-{{ invoice.status|lower }}">{{ invoice.status }}</span></td>
+                                        <td>${{ invoice.amount }}</td>
+                                        <td>
+                                            <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" class="btn btn-sm btn-info">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No invoices associated with this contact.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Created: {{ contact.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                <a href="{{ url_for('contacts.contacts') }}" class="btn btn-outline-secondary">Back to Contacts</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong>{{ contact.name }}</strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('contacts.delete_contact', contact_id=contact.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

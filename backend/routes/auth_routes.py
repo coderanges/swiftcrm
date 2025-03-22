@@ -8,7 +8,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('index'))
         
     if request.method == 'POST':
         name = request.form.get('name')
@@ -40,7 +40,7 @@ def register():
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('index'))
         
     if request.method == 'POST':
         email = request.form.get('email')
@@ -60,7 +60,7 @@ def login():
         
         # Redirect to the page the user was trying to access
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('main.index'))
+        return redirect(next_page or url_for('index'))
     
     return render_template('login.html')
 

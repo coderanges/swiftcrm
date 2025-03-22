@@ -9,6 +9,7 @@ import Navigation from './components/Navigation';
 // Pages
 import Dashboard from './pages/Dashboard';
 import Contacts from './pages/Contacts';
+import ContactNew from './pages/ContactNew';
 import Leads from './pages/Leads';
 import Orders from './pages/Orders';
 import Invoices from './pages/Invoices';
@@ -29,6 +30,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/contacts" element={<Contacts />} />
+            <Route path="/contacts/new" element={<ContactNew />} />
             <Route path="/leads" element={<Leads />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/invoices" element={<Invoices />} />
