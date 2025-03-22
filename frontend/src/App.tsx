@@ -13,6 +13,8 @@ import ContactNew from './pages/ContactNew';
 import Leads from './pages/Leads';
 import Orders from './pages/Orders';
 import Invoices from './pages/Invoices';
+import InvoiceDetail from './pages/InvoiceDetail';
+import InvoiceForm from './pages/InvoiceForm';
 import Receipts from './pages/Receipts';
 import Accounting from './pages/Accounting';
 import Login from './pages/Login';
@@ -34,6 +36,9 @@ function App() {
             <Route path="/leads" element={<Leads />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/invoices" element={<Invoices />} />
+            <Route path="/invoices/new" element={<InvoiceForm />} />
+            <Route path="/invoices/:id" element={<InvoiceDetail />} />
+            <Route path="/invoices/:id/edit" element={<InvoiceForm />} />
             <Route path="/receipts" element={<Receipts />} />
             <Route path="/accounting" element={<Accounting />} />
             <Route path="/login" element={<Login />} />

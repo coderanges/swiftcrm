@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Create Invoice - SwiftCRM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Create New Invoice</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('invoices.add_invoice') }}">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contact_id" class="form-label">Contact <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="contact_id" name="contact_id" required>
+                                        <option value="" selected disabled>Select a contact</option>
+                                        {% for contact in contacts %}
+                                        <option value="{{ contact.id }}">{{ contact.name }} {% if contact.company %}({{ contact.company }}){% endif %}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="order_id" class="form-label">Related Order</label>
+                                    <select class="form-select" id="order_id" name="order_id">
+                                        <option value="">None</option>
+                                        {% for order in orders %}
+                                        <option value="{{ order.id }}">{{ order.order_number }} (${{ "%.2f"|format(order.total_amount) }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" min="0.01" class="form-control" id="amount" name="amount" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="Unpaid" selected>Unpaid</option>
+                                        <option value="Partial">Partial</option>
+                                        <option value="Paid">Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="due_date" class="form-label">Due Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="due_date" name="due_date" 
+                                           value="{{ (today + timedelta(days=30)).strftime('%Y-%m-%d') }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Enter any notes about this invoice"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('invoices.invoices') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Invoice</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-populate invoice amount when selecting an order
+        const orderSelect = document.getElementById('order_id');
+        const amountInput = document.getElementById('amount');
+        
+        if (orderSelect && amountInput) {
+            orderSelect.addEventListener('change', function() {
+                const orderOption = this.options[this.selectedIndex];
+                if (orderOption.value) {
+                    // Extract the amount from the option text (format: "ORD-XXXX ($100.00)")
+                    const amountMatch = orderOption.text.match(/\$(\d+\.\d+)/);
+                    if (amountMatch && amountMatch[1]) {
+                        amountInput.value = amountMatch[1];
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %} 

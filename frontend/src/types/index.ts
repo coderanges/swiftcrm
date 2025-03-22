@@ -28,77 +28,76 @@ export interface Contact {
 // Lead types
 export interface Lead {
   id: number;
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
+  title: string;
   status: string;
-  source: string;
+  value: number;
   notes: string;
+  contact_id: number;
+  contact_name: string;
   created_at: string;
   updated_at: string;
 }
 
 // Order types
-export interface OrderItem {
-  id: number;
-  order_id: number;
-  product_name: string;
-  quantity: number;
-  price: number;
-  total: number;
-}
-
 export interface Order {
   id: number;
+  order_number: string;
   contact_id: number;
   contact_name: string;
-  order_date: string;
   status: string;
   total_amount: number;
   notes: string;
-  items: OrderItem[];
   created_at: string;
   updated_at: string;
+  items?: OrderItem[];
+}
+
+export interface OrderItem {
+  id: number;
+  product_name: string;
+  quantity: number;
+  price: number;
+  order_id: number;
 }
 
 // Invoice types
 export interface Invoice {
   id: number;
-  order_id: number;
+  invoice_number: string;
+  amount: number;
+  status: string;
+  due_date: string;
+  notes: string;
   contact_id: number;
   contact_name: string;
-  invoice_date: string;
-  due_date: string;
-  status: string;
+  order_id?: number;
   total_amount: number;
-  notes: string;
   created_at: string;
   updated_at: string;
+  contact?: Contact;
+  order?: Order;
+  items?: OrderItem[];
+  receipts?: Receipt[];
 }
 
 // Receipt types
 export interface Receipt {
   id: number;
-  invoice_id: number;
+  receipt_number: string;
   amount: number;
-  payment_date: string;
   payment_method: string;
   notes: string;
   created_at: string;
-  updated_at: string;
+  invoice_id: number;
 }
 
 // Accounting types
 export interface AccountingEntry {
   id: number;
-  entry_date: string;
-  type: string;
+  entry_type: string;
+  category: string;
   amount: number;
   description: string;
-  category: string;
-  reference_id?: number;
-  reference_type?: string;
+  date: string;
   created_at: string;
-  updated_at: string;
 } 
