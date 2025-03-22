@@ -71,7 +71,7 @@ swiftcrm/
 
 #### **1️⃣ Clone the Repository**  
 ```bash
-git clone https://github.com/yourusername/swiftcrm.git
+git clone https://github.com/coderanges/swiftcrm.git
 cd swiftcrm
 ```
 
