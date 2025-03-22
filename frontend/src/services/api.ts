@@ -151,7 +151,10 @@ export const accountingService = {
     api.put(`/accounting/${id}`, entry),
   
   deleteEntry: (id: number) => 
-    api.delete(`/accounting/${id}`)
+    api.delete(`/accounting/${id}`),
+    
+  getSummary: (period: string) =>
+    api.get(`/accounting/summary?period=${period}`)
 };
 
 export default api; 
