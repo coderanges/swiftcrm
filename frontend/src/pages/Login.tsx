@@ -1,27 +1,35 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { authState, login } = useAuth();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { login, isLoading, error, clearError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
+    setSubmitError(null);
+    try {
+      await login(email, password);
+    } catch (err: any) {
+      setSubmitError(err.response?.data?.error || 'Login failed. Please check your credentials.');
+    }
   };
 
   return (
-    <Container>
-      <div className="auth-form">
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+      <div className="w-100" style={{ maxWidth: '400px' }}>
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Login</h2>
             
-            {authState.error && (
-              <Alert variant="danger">{authState.error}</Alert>
+            {(error || submitError) && (
+              <Alert variant="danger" onClose={clearError} dismissible>
+                {error || submitError}
+              </Alert>
             )}
 
             <Form onSubmit={handleSubmit}>
@@ -51,9 +59,9 @@ const Login: React.FC = () => {
                 className="w-100 mt-3" 
                 variant="primary" 
                 type="submit" 
-                disabled={authState.loading}
+                disabled={isLoading}
               >
-                {authState.loading ? 'Loading...' : 'Login'}
+                {isLoading ? 'Loading...' : 'Login'}
               </Button>
             </Form>
 

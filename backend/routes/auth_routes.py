@@ -85,18 +85,30 @@ def api_register():
     if user:
         return jsonify({'error': 'Email already exists'}), 400
     
-    # Create new user
-    new_user = User(
-        name=data['name'],
-        email=data['email'],
-        password=generate_password_hash(data['password'], method='pbkdf2:sha256')
-    )
-    
-    # Add to database
-    db.session.add(new_user)
-    db.session.commit()
-    
-    return jsonify({'message': 'Registration successful!'}), 201
+    try:
+        # Create new user
+        new_user = User(
+            name=data['name'],
+            email=data['email'],
+            password=generate_password_hash(data['password'], method='pbkdf2:sha256')
+        )
+        
+        # Add to database
+        db.session.add(new_user)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Registration successful!',
+            'user': {
+                'id': new_user.id,
+                'name': new_user.name,
+                'email': new_user.email
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Registration failed: {str(e)}'}), 500
 
 @auth_bp.route('/api/login', methods=['POST'])
 def api_login():
@@ -106,25 +118,51 @@ def api_login():
     if not data or not data.get('email') or not data.get('password'):
         return jsonify({'error': 'Missing required fields'}), 400
     
-    # Check if user exists
-    user = User.query.filter_by(email=data['email']).first()
-    
-    if not user or not check_password_hash(user.password, data['password']):
-        return jsonify({'error': 'Invalid email or password'}), 401
-    
-    # Create a session for the user
-    login_user(user)
-    
-    return jsonify({
-        'message': 'Login successful!',
-        'user': {
-            'id': user.id,
-            'name': user.name,
-            'email': user.email
-        }
-    }), 200
+    try:
+        # Check if user exists
+        user = User.query.filter_by(email=data['email']).first()
+        
+        if not user or not check_password_hash(user.password, data['password']):
+            return jsonify({'error': 'Invalid email or password'}), 401
+        
+        # Create a session for the user
+        login_user(user, remember=True)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Login successful!',
+            'user': {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'error': f'Login failed: {str(e)}'}), 500
 
 @auth_bp.route('/api/logout', methods=['POST'])
 def api_logout():
-    logout_user()
-    return jsonify({'message': 'Logout successful!'}), 200
+    try:
+        logout_user()
+        return jsonify({
+            'success': True,
+            'message': 'Logout successful!'
+        }), 200
+    except Exception as e:
+        return jsonify({'error': f'Logout failed: {str(e)}'}), 500
+
+@auth_bp.route('/api/check-auth', methods=['GET'])
+def api_check_auth():
+    if current_user.is_authenticated:
+        return jsonify({
+            'authenticated': True,
+            'user': {
+                'id': current_user.id,
+                'name': current_user.name,
+                'email': current_user.email
+            }
+        }), 200
+    else:
+        return jsonify({
+            'authenticated': False
+        }), 200

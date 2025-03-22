@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an instance of axios with default config
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '/api',  // Use the proxy in package.json
   headers: {
     'Content-Type': 'application/json'
   },
@@ -12,7 +12,7 @@ const api = axios.create({
 // Add request interceptor to set authorization header
 api.interceptors.request.use(
   (config) => {
-    // You could add auth token here if using JWT
+    config.withCredentials = true; // Ensure credentials are sent with every request
     return config;
   },
   (error) => Promise.reject(error)
@@ -22,6 +22,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error:', error.response?.data || error.message);
+    
     // Handle session expiration or unauthorized access
     if (error.response && error.response.status === 401) {
       // Redirect to login or refresh token
@@ -43,7 +45,7 @@ export const authService = {
     api.post('/logout'),
   
   getCurrentUser: () => 
-    api.get('/user')
+    api.get('/check-auth')
 };
 
 // Contact services
@@ -139,19 +141,19 @@ export const receiptService = {
 // Accounting services
 export const accountingService = {
   getEntries: () => 
-    api.get('/accounting'),
+    api.get('/accounting/entries'),
   
   getEntry: (id: number) => 
-    api.get(`/accounting/${id}`),
+    api.get(`/accounting/entries/${id}`),
   
   createEntry: (entry: any) => 
-    api.post('/accounting', entry),
+    api.post('/accounting/entries', entry),
   
   updateEntry: (id: number, entry: any) => 
-    api.put(`/accounting/${id}`, entry),
+    api.put(`/accounting/entries/${id}`, entry),
   
   deleteEntry: (id: number) => 
-    api.delete(`/accounting/${id}`),
+    api.delete(`/accounting/entries/${id}`),
     
   getSummary: (period: string) =>
     api.get(`/accounting/summary?period=${period}`)

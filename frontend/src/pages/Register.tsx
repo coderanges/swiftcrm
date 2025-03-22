@@ -1,41 +1,52 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const { authState, register } = useAuth();
+  const [formError, setFormError] = useState('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { register, isLoading, error, clearError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Clear previous errors
-    setError('');
+    setFormError('');
+    setSubmitError(null);
+    clearError();
     
     // Validate passwords match
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setFormError('Passwords do not match');
       return;
     }
     
     // Proceed with registration
-    await register(name, email, password);
+    try {
+      await register(name, email, password);
+    } catch (err: any) {
+      setSubmitError(err.response?.data?.error || 'Registration failed. Please try again.');
+    }
   };
 
   return (
-    <Container>
-      <div className="auth-form">
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+      <div className="w-100" style={{ maxWidth: '400px' }}>
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Register</h2>
             
-            {error && <Alert variant="danger">{error}</Alert>}
-            {authState.error && <Alert variant="danger">{authState.error}</Alert>}
+            {formError && <Alert variant="danger">{formError}</Alert>}
+            {(error || submitError) && (
+              <Alert variant="danger" onClose={clearError} dismissible>
+                {error || submitError}
+              </Alert>
+            )}
 
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="name">
@@ -86,9 +97,9 @@ const Register: React.FC = () => {
                 className="w-100 mt-3" 
                 variant="primary" 
                 type="submit" 
-                disabled={authState.loading}
+                disabled={isLoading}
               >
-                {authState.loading ? 'Loading...' : 'Register'}
+                {isLoading ? 'Loading...' : 'Register'}
               </Button>
             </Form>
 

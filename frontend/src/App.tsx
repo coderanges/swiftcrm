@@ -5,6 +5,7 @@ import './App.css';
 
 // Components
 import Navigation from './components/Navigation';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -22,7 +23,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 // Context
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
@@ -31,20 +32,71 @@ function App() {
         <Navigation />
         <Container fluid className="mt-4">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/contacts" element={<Contacts />} />
-            <Route path="/contacts/new" element={<ContactNew />} />
-            <Route path="/leads" element={<Leads />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/orders/:id" element={<OrderDetail />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/invoices/new" element={<InvoiceForm />} />
-            <Route path="/invoices/:id" element={<InvoiceDetail />} />
-            <Route path="/invoices/:id/edit" element={<InvoiceForm />} />
-            <Route path="/receipts" element={<Receipts />} />
-            <Route path="/accounting" element={<Accounting />} />
+            {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            {/* Protected routes */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/contacts" element={
+              <ProtectedRoute>
+                <Contacts />
+              </ProtectedRoute>
+            } />
+            <Route path="/contacts/new" element={
+              <ProtectedRoute>
+                <ContactNew />
+              </ProtectedRoute>
+            } />
+            <Route path="/leads" element={
+              <ProtectedRoute>
+                <Leads />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders/:id" element={
+              <ProtectedRoute>
+                <OrderDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/invoices" element={
+              <ProtectedRoute>
+                <Invoices />
+              </ProtectedRoute>
+            } />
+            <Route path="/invoices/new" element={
+              <ProtectedRoute>
+                <InvoiceForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/invoices/:id" element={
+              <ProtectedRoute>
+                <InvoiceDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/invoices/:id/edit" element={
+              <ProtectedRoute>
+                <InvoiceForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/receipts" element={
+              <ProtectedRoute>
+                <Receipts />
+              </ProtectedRoute>
+            } />
+            <Route path="/accounting" element={
+              <ProtectedRoute>
+                <Accounting />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Container>
       </div>
